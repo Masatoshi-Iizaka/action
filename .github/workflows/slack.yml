@@ -1,0 +1,38 @@
+name: Notify Slack on Main Activity
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+
+jobs:
+  notify-on-push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on Push to Main
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: 'hrs-cloudbuilders-通知'
+          SLACK_COLOR: 'good'  # Green color to indicate a successful push
+          SLACK_MESSAGE: 'New push to main: ${{ github.event.head_commit.message }} by @${{ github.event.pusher.name }}.'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_USERNAME: GitHub Actions
+
+  notify-on-pull-request:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on Pull Request Creation
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: 'hrs-cloudbuilders-通知'
+          SLACK_COLOR: '#3465a4'  # A blue color to indicate informational message
+          SLACK_MESSAGE: 'New Pull Request Created: ${{ github.event.pull_request.title }} by @${{ github.event.pull_request.user.login }}. Review it here: ${{ github.event.pull_request.html_url }}'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_USERNAME: GitHub Actions
